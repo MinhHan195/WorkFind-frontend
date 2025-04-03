@@ -1,16 +1,27 @@
 <script>
+import AppFooter from "@/components/AppFooter.vue";
+import { useUserStore } from "@/store/user.store";
 export default {
-
-}
+  created() {
+    this.userStore = useUserStore();
+    this.userStore.fetchUserData()
+  },
+  components: {
+    AppFooter,
+  },
+};
 </script>
 
 <template>
- <h1>Hello Vues </h1>
+  <div id="app">
+    <router-view /> 
+    <AppFooter />
+  </div>
 </template>
 
 <style>
 .page {
-  max-width: 400;
-  margin: auto;
+  margin: 0;
+  padding: 0;
 }
 </style>
