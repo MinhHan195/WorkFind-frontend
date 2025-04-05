@@ -38,7 +38,7 @@
     position: sticky;
     top: 112px;
     height: 70px;
-    z-index: 100;
+    z-index: 50;
 }
 .job-card {
     border: 1px solid #ddd;

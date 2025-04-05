@@ -7,8 +7,8 @@
         </div>
         <!-- Logo -->
         
-        <div class="col-8 d-flex justify-content-end align-items-center">
-            <div class="w-auto d-flex align-items-center" style="height: 50px;">
+        <div class="col-11 d-flex justify-content-end align-items-center">
+            <div class="w-auto d-flex align-items-center me-5" style="height: 50px;">
                 <slot>
                     <ul class="navbar-nav mx-auto">
                         <li class="nav-item me-2">
@@ -29,24 +29,18 @@
                     </ul>
                 </slot>
             </div>
-        </div>
 
-        <!-- Menu chính -->
-        <div class="collapse navbar-collapse col-3 d-flex justify-content-end">
             <div class="navbar-nav">
-
-                <!-- Hồ sơ người dùng -->
                 <div class="pe-3 border-secondary border-end">
-                    <UserDropdown :user-data="userData"/>
+                    <UserDropdown/>
                 </div>
-                <!-- Nhà tuyển dụng -->
                 <div class="ps-2 me-3">
                     <router-link :to="{name: 'company'}" class="nav-link ">
                         Nhà tuyển dụng
                     </router-link>
                 </div>
-                
             </div>
+
         </div>
     </nav>
     <div style="height: 86px;"></div>
@@ -61,27 +55,9 @@
 
 <script>
 import UserDropdown from '@/components/UserDropdown.vue';
-import AuthService from '@/services/auth.service'
 export default {
     components: {
         UserDropdown,
     },
-    data() {
-        return {
-            userData: {},
-        }
-    },
-    methods: {
-        async getUser() {
-            try {
-                this.userData = await AuthService.getUser();
-            } catch (error) {
-                console.log(error);
-            }
-        }
-    },
-    async mounted(){
-        await this.getUser();
-    }
 }
 </script>

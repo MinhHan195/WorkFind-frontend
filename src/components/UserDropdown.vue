@@ -6,14 +6,16 @@
             <div class="rounded-circle " style="height: 30px; width: 30px; overflow: hidden;">
                 <img src="../assets/avatar_placeholder.png" alt="avatar placeholder" class="img-fluid">
             </div>
-            <span v-if="!userDataCheck" class="fw-medium">Đăng nhập</span>
-            <span v-else class="fw-medium">{{ userData.name }}</span>
+            <span v-if="!userStore.isLogged" class="fw-medium">Đăng nhập</span>
+            <span v-else class="fw-medium">{{ userStore.user.name }}</span>
             <i class="fa-duotone fa-solid fa-caret-down me-1"></i>
     </div>
-    <div v-if="isOpen && !userDataCheck" class="border border-secondary rounded-2 position-absolute mt-2 z-3 bg-white" style="right: 150px; z-index: 100;">
+    <div v-if="isOpen && !userStore.isLogged" class="border border-secondary rounded-2 position-absolute mt-2 z-3 bg-white" style="right: 150px; z-index: 100;">
         <div class="d-flex ">
             <div class="m-2">
-                <button type="button " class="btn btn-primary rounded-pill" @click="signin">Đăng nhập</button>
+                <router-link :to="{name: 'login'}">
+                    <button type="button " class="btn btn-primary rounded-pill">Đăng nhập</button>
+                </router-link>
             </div>
             <div class="m-2">
                 <button type="button" class="btn btn-outline-primary rounded-pill" @click="login">Đăng ký</button>
@@ -21,15 +23,15 @@
         </div>
         
     </div>
-    <div v-if="isOpen && userDataCheck" class="border border-secondary rounded-2 position-absolute mt-2 z-3 bg-white" style="right: 185px;  z-index: 100;">
+    <div v-if="isOpen && userStore.isLogged" class="border border-secondary rounded-2 position-absolute mt-2 z-3 bg-white" style="right: 185px;  z-index: 100;">
         <div class="p-3">
             <div class="d-flex column-gap-4 custom-button">
                 <div class="rounded-circle " style="height: 50px; width: 50px; overflow: hidden;">
                     <img src="../assets/avatar_placeholder.png" alt="avatar placeholder" class="img-fluid">
                 </div>
                 <div>
-                    <b v-if="!userDataCheck" class="text-primary">Tên người dùng</b>
-                    <b v-else class="text-primary">{{ userData.name }}</b>
+                    <b v-if="!userStore.isLogged" class="text-primary">Tên người dùng</b>
+                    <b v-else class="text-primary">{{ userStore.user.name }}</b>
                     <p>Tài khoản</p>
                 </div>
             </div>
@@ -62,7 +64,7 @@
             </div>
             <hr>
             <div>
-                <div class="custom-button">
+                <div class="custom-button" @click="logout">
                     <i class="fa-solid fa-arrow-right-from-bracket fa-flip-horizontal fa-xl"></i>
                     <span class="ms-2">Đăng xuất</span>
                 </div>
@@ -83,34 +85,24 @@
 </style>
 
 <script>
+import { useUserStore } from '@/store/user.store';
 export default{
+    created(){
+        this.userStore = useUserStore();
+    },
     data(){
         return {
             isOpen: false
         };
     },
-    emits: ["login", "signin"],
-    props: {
-        userData: {type: Object, default: {}}
-    },
-    computed: {
-        userDataCheck(){
-            if("message" in this.userData) {
-                return false;
-            }
-            return true;
-        },
-    },
     methods: {
         toggleDropdown() {
             this.isOpen = !this.isOpen;
         },
-        login() {
-            this.$emit("login");
+        logout(){
+            this.userStore.$reset();
+            this.$router.push({name:"home"});
         },
-        signin() {
-            this.$emit("signin");
-        },
-    }
+    },
 }
 </script>
