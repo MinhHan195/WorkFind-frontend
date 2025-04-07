@@ -95,9 +95,6 @@ import {Form, Field, ErrorMessage, useForm} from "vee-validate";
 import * as yup from "yup";
 import { Modal } from 'bootstrap';
 export default{
-    created(){
-    const { setFieldError } = useForm()
-    },  
     components: {
         Form,
         Field,

@@ -57,6 +57,33 @@ class AuthService {
             document.body.style.cursor = "default";
         }
     }
+
+    async update(data, id){
+        document.body.style.cursor = "wait";
+        try{
+            return (await this.api.post(`/${id}`,data)).data;
+        }finally{
+            document.body.style.cursor = "default";
+        }
+    }
+
+    async changePassword(data){
+        document.body.style.cursor = "wait";
+        try{
+            return (await this.api.post(`/changePassword`,data)).data;
+        }finally{
+            document.body.style.cursor = "default";
+        }
+    }
+
+    async deleteAccount(id){
+        document.body.style.cursor = "wait";
+        try{
+            return (await this.api.delete(`/${id}`)).data;
+        }finally{
+            document.body.style.cursor = "default";
+        }
+    }
     
 }
 

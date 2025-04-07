@@ -1,26 +1,53 @@
 <template>
-    <div class="row d-flex justify-content-center" style="min-height: 323px;">
-        <div class="col-8">
-            <h3 class="text-center fw-bold">ĐỔI MẬT KHẨU</h3>
-            <div class="mt-3">
-                <Form @submit="submit" :validation-schema="passwordFormSchema">
-                    <div class="form-group mb-4">
-                        <Field name="password" id="password" type="password" placeholder="Mật khẩu mới" class="form-control" v-model="data.newPassword"/>
-                        <ErrorMessage name="password" class="error-feedback" />
-                    </div>
-                    <div class="form-group mb-4">
-                        <Field name="confirmPassword" id="confirmPassword" type="password" placeholder="Nhập lại mật khẩu mới" class="form-control" v-model="data.confirmNewPassword"/>
-                        <ErrorMessage name="confirmPassword" class="error-feedback" />
-                    </div>
-                    <div class="form-group text-end">
-                        <button class="btn btn-primary">Xác nhận</button>
-                    </div>
-                </Form>
+    
+    <Form @submit="submit" :validation-schema="passwordFormSchema">
+        <div class="container px-5 mx-5 pt-4">
+            <div class="mb-5">
+                <h3 class="fw-bold">Thay đổi mật khẩu</h3>
             </div>
-        </div>
-    </div>
+            <div class="form-group mb-4">
+                <Field name="oldPassword" id="oldPassword" type="password" placeholder="Mật khẩu hiện tại" class="form-control" v-model="data.oldPassword"/>
+                <div class="row mt-2">
+                    <div class="col-8">
+                        <ErrorMessage name="oldPassword" class="error-feedback" />
+                    </div>
+                    <div class="col-4 text-end">
+                        <input type="checkbox" @input="activePassword('oldPassword',$event)" class="form-check-input">
+                        <span> Hiển thị mật khẩu</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-4">
+                <Field name="newPassword" id="newPassword" type="password" placeholder="Mật khẩu mới" class="form-control" v-model="data.newPassword"/>
+                <div class="row mt-2">
+                    <div class="col-8">
+                        <ErrorMessage name="newPassword" class="error-feedback" />
+                    </div>
+                    <div class="col-4 text-end">
+                        <input type="checkbox" @input="activePassword('newPassword',$event)" class="form-check-input">
+                        <span> Hiển thị mật khẩu</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group mb-4">
+                <Field name="confirmNewPassword" id="confirmNewPassword" type="password" placeholder="Nhập lại mật khẩu mới" class="form-control" v-model="data.confirmNewPassword"/>
+                <div class="row mt-2">
+                    <div class="col-8">
+                        <ErrorMessage name="confirmNewPassword" class="error-feedback" />
+                    </div>
+                    <div class="col-4 text-end">
+                        <input type="checkbox" @input="activePassword('confirmNewPassword',$event)" class="form-check-input">
+                        <span> Hiển thị mật khẩu</span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group text-end">
+                <button type="submit" class="btn btn-primary">Xác nhận</button>
+            </div>
+        </div>  
+    </Form>
 
-    <div class="modal fade" id="exampleModal" tabindex="-1" >
+<div class="modal fade" id="exampleModal" tabindex="-1" >
         <div class="modal-dialog">
             <div class="modal-content">
             <div class="modal-header">
@@ -46,13 +73,14 @@
 </style>
 
 <script>
+import {Form, Field, ErrorMessage, useForm} from "vee-validate";
 import * as yup from "yup";
-import {Form, Field, ErrorMessage} from "vee-validate";
-import authService from "@/services/auth.service";
+import { useUserStore } from "@/store/user.store";
 import { Modal } from 'bootstrap';
+import authService from "@/services/auth.service";
 export default{
-    props:{
-        id: {type: String, default:""}
+    created(){
+        this.userStore = useUserStore();
     },
     components: {
         Form,
@@ -60,38 +88,46 @@ export default{
         ErrorMessage,
     },
     data(){
-        const passwordFormSchema = yup.object().shape({
-            password: yup
+        const passwordFormSchema=yup.object().shape({
+            oldPassword: yup
                 .string()
                 .required("Mật khẩu không được trống")
-                .min(6,"Mật khẩu phải ít nhất 6 ký tự")
+                .min(6,"Mật khẩu ít nhất 6 ký tự")
                 .max(30, "Mật khẩu tối đa 30 ký tự"),
-            confirmPassword: yup
+            newPassword: yup
+                .string()
+                .required("Mật khẩu không được trống")
+                .min(6,"Mật khẩu ít nhất 6 ký tự")
+                .max(30, "Mật khẩu tối đa 30 ký tự"),
+            confirmNewPassword: yup
                 .string()
                 .required("Mật khẩu xác nhận không được trống")
-                .oneOf([yup.ref("password")], "Mật khẩu xác nhận không khớp"),
+                .oneOf([yup.ref("newPassword")], "Mật khẩu không khớp"),
         })
         return{
+            data: {},
             passwordFormSchema,
-            data: {
-                userId: this.id,
-                newPassword: "",
-                confirmNewPassword: ""
-            },
-            title:"",
+            title: "",
             message: ""
         }
     },
-    methods: {
+    methods:{
+        activePassword(id,e){
+            if(e.target.checked){
+                document.getElementById(id).type = "text";
+            }else{
+                document.getElementById(id).type = "password";
+            }
+        },
         async submit(){
             try {
-                const result = await authService.resetPassword(this.data);
+                const result = await authService.changePassword(this.data);
                 if(result.result){
                     this.title="Thông báo"
                     this.message= result.message;
                     const myModal = new Modal(document.getElementById('exampleModal'));
                     myModal.show()
-                    this.$router.push({name:"login"});
+                    this.$router.push({name:"information"});
                 }
             } catch (error) {
                 this.title="Thông báo lỗi"
@@ -100,6 +136,6 @@ export default{
                 myModal.show()
             }
         }
-    },
+    }
 }
 </script>

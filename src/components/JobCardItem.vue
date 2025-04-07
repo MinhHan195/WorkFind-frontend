@@ -1,11 +1,11 @@
 <template>
-    <div class="row p-0 m-0 d-flex border border-secondary-subtle rounded-3 shadow-sm " style="height: 100%; width: 100%;">
+    <div class="row p-0 m-0 d-flex border border-secondary-subtle rounded-3 shadow-sm " style="height: 100%; width: 100%;" @click="goTo()">
         
         <div class="col-4 me-2 p-0 rounded-start-3 bg-white overflow-hidden text-center" style="width: auto; height: 100%;">
             <img src="../assets/avatar_placeholder.png" alt="" style="width: 100%; height: 100%;">
         </div>
 
-        <div class="col-8 p-2 d-flex flex-column justify-content-between flex-grow-1" @click="updateActiveIndex(job._id)">
+        <div class="col-8 p-2 d-flex flex-column justify-content-between flex-grow-1">
             <div class="d-flex justify-content-between w-100">
                 <div class="text-title">
                     <span class="fw-bold text-capitalize fs-6">{{ job.jobName}}</span>
@@ -13,12 +13,12 @@
                 <div class="ms-2">
                     <div>
                         <i class="fa-regular fa-heart favorite-button"
-                        v-if="!this.isLogin"
+                        v-if="!this.userStore.isLogged"
                         @click.stop="goToLogin"
                         ></i>
                         <i class="fa-solid fa-heart position-relative favorite-button"
                         v-else-if="isFavorite"
-                        @click.stop="removeFavoriteJob"
+                        @click.stop="removeFavoriteJob(job._id)"
                         ></i>
                         <i class="fa-regular fa-heart favorite-button" 
                         v-else
@@ -65,16 +65,23 @@
 <script>
 import { formatDistanceToNow } from "date-fns";
 import { vi } from "date-fns/locale";
+import { useUserStore } from "@/store/user.store";
+import { useJobStore } from "@/store/job.store";
 export default{
+    created() {
+        this.userStore = useUserStore();
+        this.jobStore = useJobStore();
+    },
     props:{
-        listUserFavoriteJob: { type: Array, default: []},
         job: { type: Object, default: {}},
-        isLogin: {type: Boolean, default: false},
     },
     emits: ["addFavoriteJob","removeFavoriteJob", "update:activeIndex","goToLogin"],
     computed:{
         isFavorite(){
-            return (this.listUserFavoriteJob.includes(this.job._id))
+            if(this.userStore.user.listUserFavoriteJob===undefined){
+                return false;
+            }
+            return (this.userStore.user.listUserFavoriteJob.includes(this.job._id))
         } 
     },
     methods: {
@@ -82,20 +89,23 @@ export default{
             return (formatDistanceToNow(new Date(time), { locale: vi, addSuffix: true }));
         },
         addJobFavorite(index){
-            console.log("Add Favorite: ",index);
-            this.$emit("addFavoriteJob", index);
+            this.userStore.addJobFavorite({jobId: index})
+            this.jobStore.getListFavorite();
         },
-        removeFavoriteJob(index){
-            console.log("Remove Favorite: ",index);
-            this.$emit("removeFavoriteJob", index);
-        },
-        updateActiveIndex(index){
-            console.log("activeIndex: ", index);
-            this.$emit("update:activeIndex", index);
+        async removeFavoriteJob(index){
+            const result = await this.userStore.deleteJobFavorite(index)
+            
         },
         goToLogin(){
-            console.log("goToLogin");
-            this.$emit("goToLogin");
+            console.log("Add Favorite");
+            this.$router.push({name: "login"});
+        },
+        goTo(){
+            if(this.userStore.isLogged){
+                this.$router.push({name: "jobDetail", params: {id: this.job._id}})
+            }else{
+                this.$router.push({name: "login"});
+            }
         }
     },
 }

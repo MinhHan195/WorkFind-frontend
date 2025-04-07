@@ -47,7 +47,7 @@ const routes = [
             {
                 path: "/check/reset_password/:id",
                 name: "resetPassword",
-                component: () => import("@/components/ChangePassword.vue"),
+                component: () => import("@/components/PasswordForm.vue"),
                 props: true
             },
             {
@@ -59,7 +59,7 @@ const routes = [
         ]
     },
     {
-        path: "/job_detail/:name",
+        path: "/job_detail/:id",
         name: "jobDetail",
         component: () => import("@/views/JobDetail.vue"),
         props: true
@@ -67,6 +67,33 @@ const routes = [
     {
         path:"/profile",
         name:"profile",
+        component: () => import("@/views/User.vue"),
+        children: [
+            {
+                path: "/favorite",
+                name: "favorite",
+                component: () => import("@/components/JobFavorite.vue"),
+                props: { index: 1 }
+            },
+            {
+                path: "/user",
+                name: "user",
+                component: () => import("@/components/UserInfo.vue"),
+                children:[
+                    {
+                        path: "/user/information",
+                        name: "information",
+                        component: () => import("@/components/UserForm.vue"),
+                        props: { index: 3 }
+                    },
+                    {
+                        path: "/user/change_password",
+                        name: "changePassword",
+                        component: () => import("@/components/ChangePassword.vue"),
+                    }
+                ]
+            }
+        ]
     },
     {
         path:"/company",

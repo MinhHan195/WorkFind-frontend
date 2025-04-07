@@ -457,7 +457,7 @@ export default {
             <div class="col-9 p-5">
                 <JobResult/>
             </div>
-            <div class="col-3 ps-4">
+            <div class="col-3 ps-4 pt-5">
                 <JobSideBar />
             </div>
         </div>

@@ -1,10 +1,8 @@
 <script>
 import JobCardItem from './JobCardItem.vue';
-import { useUserStore } from "@/store/user.store";
 import { useJobStore } from "@/store/job.store";
 export default {
     created() {
-        this.userStore = useUserStore();
         this.jobStore = useJobStore();
         this.jobStore.getListJob();
     },
@@ -53,17 +51,17 @@ export default {
                         :key="job._id"
                         @click="updateActiveIndex(job._id)"
                         >
-                            <JobCardItem :job="job" :listUserFavoriteJob="userStore.user.listFavoriteJobs" :isLogin="userStore.user.isLogged"/>
+                            <JobCardItem :job="job"/>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators1" data-bs-slide="prev">
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators1" data-bs-slide="prev" style="width: 100px;">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators1" data-bs-slide="next">
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators1" data-bs-slide="next" style="width: 100px;">
             <span class="carousel-control-next-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>

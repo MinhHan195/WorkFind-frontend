@@ -21,11 +21,6 @@
                                 <i class="fa-solid fa-building fa-2xl" style="color: #03abfd;"></i> Công ty
                             </router-link>
                         </li>
-                        <li class="nav-item me-2">
-                            <router-link :to="{name: 'profile'}" class="nav-link">
-                                <i class="fa-solid fa-file fa-2xl" style="color: #03abfd;"></i> Mẫu CV Xin Việc
-                            </router-link>
-                        </li>
                     </ul>
                 </slot>
             </div>

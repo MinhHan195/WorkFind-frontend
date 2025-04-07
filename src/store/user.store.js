@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import AuthService from "@/services/auth.service";
+import jobService from "@/services/job.service";
+
 
 export const useUserStore = defineStore("user",{
     state: () => {
@@ -11,18 +13,14 @@ export const useUserStore = defineStore("user",{
     },
     actions: {
         async logIn(data) {
-            try {
-                const result = await AuthService.logIn(data);
-                if(result.result){
-                    this.user = result.user;
-                    this.isLogged = true;
-                    return {
-                        result: result.result,
-                        message: result.message
-                    }
+            const result = await AuthService.logIn(data);
+            if(result.result){
+                this.user = result.user;
+                this.isLogged = true;
+                return {
+                    result: result.result,
+                    message: result.message
                 }
-            } catch (error) {
-                return error
             }
         },
         async fetchListUsers(){
@@ -48,6 +46,38 @@ export const useUserStore = defineStore("user",{
             } catch (error) {
                 console.log("Error delete users: ",error);
             }
+        },
+
+        async update(data){
+            const result = await AuthService.update(data, this.user._id);
+            if(result.result){
+                this.user = result.user;
+                return {
+                result: result.result,
+                message: result.message
+                }
+            }
+        },
+
+        async addJobFavorite(data){
+            const result = await jobService.addJobFavorite(data);
+            if(result.result){
+                this.user.listUserFavoriteJob.push(data.jobId)
+            }
+        },
+
+        async deleteJobFavorite(data){
+            const result = await jobService.deleteJobFavorite(data);
+            if(result.result){
+                for(let i in this.user.listUserFavoriteJob){
+                    if(this.user.listUserFavoriteJob[i]===data){
+                        this.user.listUserFavoriteJob.splice(i,1);
+                        break;
+                    }
+                }
+                return true;
+            }
+            
         }
     },
     persist: {

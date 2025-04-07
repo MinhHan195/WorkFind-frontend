@@ -1,5 +1,5 @@
 <template>
-<h4 class="mt-4">Việc làm nổi bậc</h4>
+<h4 class="">Việc làm nổi bậc</h4>
 <div>
     <div style="height: 100px;" class="mb-3"
     v-for="i in 10"
@@ -19,9 +19,6 @@ export default{
     created(){
         this.jobStore = useJobStore();
         this.userStore = useUserStore();
-        // for(let i in 10){
-        //     console.log(this.jobStore.list[i]);
-        // }
     },
     components: {
         JobCardItem,

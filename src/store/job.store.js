@@ -8,6 +8,7 @@ export const useJobStore = defineStore("job", {
             list: [],
             filter: [],
             listJobResult: [],
+            listFavorite: [],
         }
     },
     actions: {
@@ -49,6 +50,16 @@ export const useJobStore = defineStore("job", {
                 console.log(error);
             }
         },
+        findJobById(id){
+            for(let i in this.list){
+                if(this.list[i]._id===id){
+                    return this.list[i];
+                }
+            }
+        },
+        async getListFavorite(){
+            this.listFavorite = await JobService.getListFavoriteJobs();
+        }
     },
     persist: {
         enabled: true,
